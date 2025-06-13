@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Energy Data Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  </head>
+  <body>
+    <h2>📊 Energy Data for site_A</h2>
+    <div id="chart"></div>
+
+    <script>
+      async function fetchData() {
+        const res = await fetch(
+          "http://127.0.0.1:8000/records?site_id=site_A&start=2025-06-08T00:00:00&end=2025-06-11T00:00:00"
+        );
+        const data = await res.json();
+
+        const timestamps = data.map((d) => d.timestamp);
+        const netEnergy = data.map((d) => d.net_energy_kwh);
+        const anomalies = data.filter((d) => d.anomaly);
+
+        const trace = {
+          x: timestamps,
+          y: netEnergy,
+          mode: "lines+markers",
+          name: "Net Energy",
+        };
+
+        const anomalyTrace = {
+          x: anomalies.map((a) => a.timestamp),
+          y: anomalies.map((a) => a.net_energy_kwh),
+          mode: "markers",
+          marker: { color: "red", size: 10 },
+          name: "Anomalies",
+        };
+
+        Plotly.newPlot("chart", [trace, anomalyTrace], {
+          title: "Net Energy Over Time",
+          xaxis: { title: "Timestamp" },
+          yaxis: { title: "kWh" },
+        });
+      }
+
+      fetchData();
+    </script>
+  </body>
+</html>

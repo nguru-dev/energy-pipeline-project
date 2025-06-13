@@ -1,10 +1,18 @@
 from fastapi import FastAPI, Query
+from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
 from datetime import datetime
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Or restrict to ["http://127.0.0.1:5500"] for local HTML
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('EnergyReadings')
 
